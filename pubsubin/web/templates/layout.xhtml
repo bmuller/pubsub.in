@@ -1,3 +1,48 @@
-<html xmlns:nevow="http://nevow.com/ns/nevow/0.1">
-<div nevow:render="content" />
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:n="http://nevow.com/ns/nevow/0.1">
+<head>
+  <!-- design modified from http://www.oswd.org/design/preview/id/3621 -->
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" />
+  <title>Title</title>
+  <link href="static/style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+  <div id="container">
+    <div id="header">
+      <h1>Header</h1>
+      <h2>Subheader</h2><br />
+      <hr />
+    </div><!-- end header -->
+
+    <div id="left">
+        <h3>Summary</h3>
+        <ul>
+	  <li>&raquo; <a href="/">Home</a></li>
+        </ul>
+
+      <h3>Our Services</h3>
+        <ul>
+	  <li>&raquo; <a href="/services.php">One</a></li>
+	  <li>&raquo; <a href="/media.php">Two</a></li>
+        </ul>
+
+    </div><!-- end left division -->
+
+    <div id="main">
+<h3>Sub sub header</h3>
+<p><div n:render="content" />
+</p>
+
+    </div> <!-- end main -->
+    <div id="footer">
+      <hr />
+
+      <p class="left"></p>
+
+      <p class="right">Some rights reserved </p>
+
+      <p>&nbsp;</p>
+    </div><!-- end footer -->
+  </div><!-- end container -->
+</body>
 </html>

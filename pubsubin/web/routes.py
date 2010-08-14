@@ -1,6 +1,6 @@
 import os
 from twisted.python import log
-from nevow import loaders, rend, tags, inevow
+from nevow import loaders, rend, tags, inevow, static
 from pubsubin.control import Router
 
 
@@ -29,4 +29,8 @@ class HumanRoot(HumanBase):
     def render_content(self, ctx, data):
         return "this is content"
 
-    
+
+    def child_static(self, ctx):
+        staticpath = os.path.join(self.config['templateDir'], "static")
+        return static.File(staticpath)
+
