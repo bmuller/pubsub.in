@@ -3,46 +3,27 @@
 <head>
   <!-- design modified from http://www.oswd.org/design/preview/id/3621 -->
   <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" />
-  <title>Title</title>
-  <link href="static/style.css" rel="stylesheet" type="text/css" />
+  <title>PubSub.in: A PubSubHub</title>
+  <link href="/human/static/style.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
   <div id="container">
     <div id="header">
-      <h1>Header</h1>
-      <h2>Subheader</h2><br />
+      <h1>PubSubin'</h1>
+      <h2>a pub sub hub, bub</h2><br />
       <hr />
-    </div><!-- end header -->
-
-    <div id="left">
-        <h3>Summary</h3>
-        <ul>
-	  <li>&raquo; <a href="/">Home</a></li>
-        </ul>
-
-      <h3>Our Services</h3>
-        <ul>
-	  <li>&raquo; <a href="/services.php">One</a></li>
-	  <li>&raquo; <a href="/media.php">Two</a></li>
-        </ul>
-
-    </div><!-- end left division -->
-
+    </div>
+    <div id="left" n:data="menu" n:render="data" />
     <div id="main">
-<h3>Sub sub header</h3>
-<p><div n:render="content" />
-</p>
-
-    </div> <!-- end main -->
+      <n:invisible n:data="message" n:render="data" />
+      <n:invisible n:data="content" n:render="data" />
+    </div>
     <div id="footer">
       <hr />
-
       <p class="left"></p>
-
-      <p class="right">Some rights reserved </p>
-
+      <p class="right">this project is open source</p>
       <p>&nbsp;</p>
-    </div><!-- end footer -->
-  </div><!-- end container -->
+    </div>
+  </div>
 </body>
 </html>

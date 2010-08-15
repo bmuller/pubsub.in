@@ -135,3 +135,24 @@ a:hover {
 	font-size:100%;
 	margin-top:5px;
 }
+
+div.freeform-form label.freeform-label {
+       margin: 5px;
+}
+
+div.freeform-form input {
+    margin: 5px;
+}
+
+div.freeform-form fieldset {
+    padding: 10px;
+    border: 1px dashed #ccc;
+}
+
+div.freeform-form div.freeform-form-error {
+    display: none;
+}
+
+div.freeform-form div.freeform-error {
+    color: #ff8800;
+}
