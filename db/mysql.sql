@@ -1,13 +1,46 @@
-CREATE TABLE node (
-       id INT NOT NULL AUTO_INCREMENT, 
-       name VARCHAR(255) NOT NULL,
-       user_id INT,
-       description TEXT,
-       PRIMARY KEY id
+DROP TABLE IF EXISTS users;
+CREATE TABLE users (
+       id INT NOT NULL AUTO_INCREMENT,
+       username VARCHAR(255),
+       password VARCHAR(255),
+       PRIMARY KEY (id)
 ) ENGINE = INNODB;
 
-CREATE TABLE users(
+DROP TABLE IF EXISTS nodes;
+CREATE TABLE nodes (
        id INT NOT NULL AUTO_INCREMENT,
-       
+       shortname VARCHAR(255) NOT NULL, 
+       name VARCHAR(255),
+       user_id INT NOT NULL,
+       description TEXT,
+       PRIMARY KEY (id)
 ) ENGINE = INNODB;
-       	 
+
+DROP TABLE IF EXISTS addresses;
+CREATE TABLE addresses (
+       id INT NOT NULL AUTO_INCREMENT,
+       user_id INT NOT NULL,
+       value VARCHAR(255) NOT NULL, 
+       verified BOOLEAN DEFAULT 0,
+       PRIMARY KEY (id)
+) ENGINE = INNODB;
+
+DROP TABLE IF EXISTS subscribers;
+CREATE TABLE subscribers (
+       id INT NOT NULL AUTO_INCREMENT,
+       user_id INT NOT NULL,
+       node_id INT NOT NULL,
+       service_name VARCHAR(255) NOT NULL, 
+       config TEXT,
+       PRIMARY KEY (id)
+) ENGINE = INNODB;
+
+DROP TABLE IF EXISTS publishers;
+CREATE TABLE publishers (
+       id INT NOT NULL AUTO_INCREMENT,
+       user_id INT NOT NULL,
+       node_id INT NOT NULL,
+       service_name VARCHAR(255) NOT NULL, 
+       config TEXT,
+       PRIMARY KEY (id)
+) ENGINE = INNODB;

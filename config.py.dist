@@ -1,0 +1,11 @@
+# Example config file.  Only the first few config directives are required,
+# the rest can be specified (if not, the defaults listed here will be used)
+CONFIG = {
+    'dbuser': 'pubsubin', # required
+    'dbpass': '',         # required
+    'dbname': 'pubsubin', # required
+    'dbdriver': 'MySQLdb',
+    'dbhost': 'localhost',
+    'webport': 8080,
+    ' templateDir': '',   # this is set automatically to the pubsubin tempaltes dir
+    }

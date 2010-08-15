@@ -1,0 +1,29 @@
+user
+ id 
+ username
+ password
+
+node
+ id 
+ user_id (creator)
+ shortname
+ name
+ description
+
+addresses (for sms and email)
+ id
+ user_id
+ value
+ verified (bool)
+
+subscribers
+ user_id
+ node_id
+ service_name
+ config 
+
+publishers
+ user_id
+ node_id
+ service_name
+ config
