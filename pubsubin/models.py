@@ -24,3 +24,7 @@ class Subscriber(DBObject):
 
 class Publisher(DBObject):
     BELONGSTO = ['user', 'node']
+
+
+class Message(DBObject):
+    BELONGSTO = ['node']

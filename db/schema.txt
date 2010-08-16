@@ -15,6 +15,7 @@ addresses (for sms and email)
  user_id
  value
  verified (bool)
+ mobile (bool)
 
 subscribers
  user_id
@@ -27,3 +28,9 @@ publishers
  node_id
  service_name
  config
+
+messages
+ id
+ node_id
+ title
+ body

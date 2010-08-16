@@ -22,6 +22,7 @@ CREATE TABLE addresses (
        user_id INT NOT NULL,
        value VARCHAR(255) NOT NULL, 
        verified BOOLEAN DEFAULT 0,
+       mobile BOOLEAN DEFAULT 0,
        PRIMARY KEY (id)
 ) ENGINE = INNODB;
 
@@ -42,5 +43,14 @@ CREATE TABLE publishers (
        node_id INT NOT NULL,
        service_name VARCHAR(255) NOT NULL, 
        config TEXT,
+       PRIMARY KEY (id)
+) ENGINE = INNODB;
+
+DROP TABLE IF EXISTS messages;
+CREATE TABLE messages (
+       id INT NOT NULL AUTO_INCREMENT,
+       node_id INT NOT NULL,
+       title VARCHAR(255),
+       body TEXT NOT NULL, 
        PRIMARY KEY (id)
 ) ENGINE = INNODB;
