@@ -9,6 +9,9 @@ from formless import annotate, webform
 
 from pubsubin.models import User
 
+from twistler.controllers import BaseController
+
+
 def requireLogin(func):
     def wrapper(klass, ctx):
         session = inevow.ISession(ctx)
@@ -20,17 +23,10 @@ def requireLogin(func):
     return wrapper
         
 
-class HumanBase(rend.Page):
-    addSlash = True
-    
-    def __init__(self):
-        HumanBase.docFactory = HumanBase.make_loader("layout")
-        rend.Page.__init__(self)
+class HumanController(BaseController):
+    def index(self, ctx, id):
+        return "human index"
 
-    @classmethod
-    def make_loader(klass, name):
-        layoutpath = os.path.join(Router.getConfig('templateDir'), "%s.xhtml" % name)
-        return loaders.xmlfile(layoutpath)
 
     def make_menu(self, d):
         items = []
@@ -42,14 +38,6 @@ class HumanBase(rend.Page):
         return items
 
         
-    def kidpath(self, ctx, name):
-        return inevow.IRequest(ctx).URLPath().child(name)
-
-
-    def sibpath(self, ctx, name):
-        return inevow.IRequest(ctx).URLPath().parentdir().child(name)
-
-
     def data_menu(self, ctx, data):
         session = inevow.ISession(ctx)
         mname = "Main Nav"
@@ -84,35 +72,6 @@ class HumanBase(rend.Page):
         return User.find(session.user_id)
 
 
-class SimplePage(HumanBase):
-    def __init__(self, contents):
-        self.contents = contents
-        HumanBase.__init__(self)
-
-
-    def data_content(self, ctx, data):
-        return self.contents
-
-
-
-class HumanRoot(HumanBase):
-    def child_static(self, ctx):
-        staticpath = os.path.join(Router.getConfig('templateDir'), "static")
-        return static.File(staticpath)
-
-
-    def child_index(self, ctx):
-        return SimplePage([tags.h3["Header"], tags.p["This is content"]])
-
-
-    def child_about(self, ctx):
-        return SimplePage([tags.h3["Header"], tags.p["This is content"]])        
-
-
-    def child_login(self, ctx):
-        return HumanLogin()
-
-
     def child_logout(self, ctx):
         session = inevow.ISession(ctx)
         session.user_id = None
@@ -135,7 +94,6 @@ class HumanRoot(HumanBase):
         return NodePage()
     
 
-class HumanLogin(HumanBase):
     def data_content(self, ctx, data):
         return [tags.h3["hello"], webform.renderForms()]
 
@@ -159,16 +117,3 @@ class HumanLogin(HumanBase):
     def bind_login(self, ctx):
         args = {'username': annotate.String(required=True), 'password': annotate.PasswordEntry(required=True)}
         return self.make_form(args, 'login', 'Login')
-
-
-class NodePage(HumanBase):
-    nodelist = HumanBase.make_loader("nodelist")
-    
-    def data_content(self, ctx, data):
-        return NodePage.nodelist.load(ctx)
-
-
-    def render_nodelist(self, ctx, data):
-        pat = inevow.IQ(ctx).patternGenerator('node')
-        return [pat(data=tags.a(href="http://google.com")['google']) for _ in range(10)]
-        return "hello" #[pat['hello'] for _ in range(10)]

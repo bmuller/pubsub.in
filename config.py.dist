@@ -7,5 +7,5 @@ CONFIG = {
     'dbdriver': 'MySQLdb',
     'dbhost': 'localhost',
     'webport': 8080,
-    ' templateDir': '',   # this is set automatically to the pubsubin tempaltes dir
+    ' templateDir': '',   # this is set automatically to the pubsubin templates dir
     }
