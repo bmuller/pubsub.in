@@ -25,7 +25,7 @@ def requireLogin(func):
 
 class HumanController(BaseController):
     def index(self, ctx, id):
-        return "human index"
+        return self.view()
 
 
     def make_menu(self, d):

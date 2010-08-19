@@ -8,4 +8,5 @@ CONFIG = {
     'dbhost': 'localhost',
     'webport': 8080,
     ' templateDir': '',   # this is set automatically to the pubsubin templates dir
+    'templateCacheDir': None
     }

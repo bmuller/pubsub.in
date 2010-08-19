@@ -7,7 +7,8 @@ class Router:
         'dbdriver': 'MySQLdb',
         'dbhost': 'localhost',
         'templateDir': os.path.join(pubsubin.__path__[0], "web", "templates"),
-        'webport': 8080
+        'webport': 8080,
+        'templateCacheDir': None
         }
 
 
