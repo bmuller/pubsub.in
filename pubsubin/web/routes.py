@@ -10,7 +10,9 @@ class WebRoot(AppController):
         viewsDir = Router.getConfig('templateDir')
         templateCacheDir = Router.getConfig('templateCacheDir')
         AppController.__init__(self, viewsDir=viewsDir, templateCacheDir=templateCacheDir)
-        
-        self.addController(HumanController)
-        self.addController(FilesController, ['static'])
+
+        # these are extra view dirs that controllers should be able to see 
+        viewsDirs = ['common']
+        self.addController(HumanController, viewDirs=viewsDirs)
+        self.addController(FilesController, paths=['static'])
         

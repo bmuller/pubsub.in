@@ -1,10 +1,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:n="http://nevow.com/ns/nevow/0.1">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <!-- design modified from http://www.oswd.org/design/preview/id/3621 -->
   <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" />
   <title>PubSub.in: A PubSubHub</title>
-  <link href="/human/static/style.css" rel="stylesheet" type="text/css" />
+  <link href="/static/style.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
   <div id="container">
@@ -13,10 +13,23 @@
       <h2>a pub sub hub, bub</h2><br />
       <hr />
     </div>
-    <div id="left" n:data="menu" n:render="data" />
+
+    <div id="left">
+      % for mname, mitems in menu.items():
+        <h3>${mname}</h3>
+        <ul>
+        % for (name, url) in mitems:
+          <li>&raquo; <a href="${url}">${name}</a></li>
+        % endfor
+        </ul>
+      % endfor
+    </div>
+
     <div id="main">
-      <n:invisible n:data="message" n:render="data" />
-      <n:invisible n:data="content" n:render="data" />
+      % if message != "":
+      <div id="message">${message}</div>
+      % endif
+      ${self.body()}
     </div>
     <div id="footer">
       <hr />

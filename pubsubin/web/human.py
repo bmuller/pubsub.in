@@ -24,83 +24,20 @@ def requireLogin(func):
         
 
 class HumanController(BaseController):
-    def index(self, ctx, id):
+    def index(self, ctx):
         return self.view()
 
 
-    def make_menu(self, d):
-        items = []
-        prefix = stan.xml('&raquo; ')
-        for key, values in d.items():
-            items.append(tags.h3[key])
-            ul = [tags.li[prefix, tags.a(href=url)[name]] for (name, url) in values]
-            items.append(tags.ul[ul])
-        return items
-
-        
-    def data_menu(self, ctx, data):
-        session = inevow.ISession(ctx)
-        mname = "Main Nav"
-        menu = {mname: []}
-        if getattr(session, 'user_id', None) is None:
-            menu[mname].append(("Log In", self.sibpath(ctx, 'login')))
-        else:
-            menu[mname].append(("Nodes", self.sibpath(ctx, 'nodes')))
-            menu[mname].append(("Log Out", self.sibpath(ctx, 'logout')))
-        menu[mname].append(('About', self.sibpath(ctx, 'about')))
-        return self.make_menu(menu)
-
-
-    def make_form(self, args, name, action):
-        args['ctx'] = annotate.Context()
-        arguments = [annotate.Argument(n, v, v.id) for n, v in args.items()]
-        method = annotate.Method(arguments=arguments)
-        return annotate.MethodBinding(name, method, action=action)        
-
-
-    def data_message(self, ctx, data):
-        session = inevow.ISession(ctx)
-        msg = getattr(session, 'msg', None)
-        if msg is not None:
-            session.msg = None
-            return stan.Tag('div', {'class': 'msg'}, msg)
-        return ""
-
-
-    def get_user(self, ctx):
-        session = inevow.ISession(ctx)        
-        return User.find(session.user_id)
-
-
-    def child_logout(self, ctx):
-        session = inevow.ISession(ctx)
-        session.user_id = None
-        session.msg = "You have been logged out."
-        return Redirect(self.kidpath(ctx, 'index'))
-        
-
-    @requireLogin
-    def child_welcome(self, ctx):
-        return SimplePage([tags.h3["Header"], tags.p["Welcome! This is content"]])
-
-
-    def renderHTTP(self, ctx):
-        request = inevow.IRequest(ctx)
-        request.redirect(self.kidpath(ctx, 'welcome'))
-        return ""
-        
-    @requireLogin
-    def child_nodes(self, ctx):
-        return NodePage()
-    
-
-    def data_content(self, ctx, data):
-        return [tags.h3["hello"], webform.renderForms()]
-
-
-    def login(self, **args):
-        d = User.getByUserPass(args['username'], args['password'])
-        return d.addCallback(self._login, args['ctx'])
+    def login(self, ctx):
+        return webform.renderForms()
+        def dologin(users):
+            return self.view({'title': 'title', 'form': users(ctx, None)})
+        #return User.all().addCallback(dologin)
+        return webform.renderForms().render(ctx, None).addCallback(dologin)
+        #args = {'title': "You Must Log In", 'form': webform.renderForms().render(ctx, None)}
+        #return self.view(args)
+        #d = User.getByUserPass(args['username'], args['password'])
+        #return d.addCallback(self._login, args['ctx'])
 
 
     def _login(self, user, ctx):
@@ -117,3 +54,38 @@ class HumanController(BaseController):
     def bind_login(self, ctx):
         args = {'username': annotate.String(required=True), 'password': annotate.PasswordEntry(required=True)}
         return self.make_form(args, 'login', 'Login')
+
+
+    def getDefaultViewArgs(self):
+        args = { 'message': "",
+                 'menu': self.makeMenu() }
+        return args
+    
+
+    def makeMenu(self):
+        mname = "Main Nav"
+        menu = {mname: []}
+        if getattr(self.session, 'user_id', None) is None:
+            menu[mname].append(("Log In", self.path('login')))
+        #else:
+        #    menu[mname].append(("Nodes", self.sibpath(ctx, 'nodes')))
+        #    menu[mname].append(("Log Out", self.sibpath(ctx, 'logout')))
+        #menu[mname].append(('About', self.sibpath(ctx, 'about')))
+        return menu
+
+
+
+    ################################################
+
+    
+    def make_form(self, args, name, action):
+        args['ctx'] = annotate.Context()
+        arguments = [annotate.Argument(n, v, v.id) for n, v in args.items()]
+        method = annotate.Method(arguments=arguments)
+        return annotate.MethodBinding(name, method, action=action)        
+
+
+
+    def get_user(self, ctx):
+        session = inevow.ISession(ctx)        
+        return User.find(session.user_id)
