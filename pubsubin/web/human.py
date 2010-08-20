@@ -1,91 +1,48 @@
-import os
-from twisted.python import log
-from twisted.web.util import Redirect
-from nevow import loaders, rend, tags, inevow, static, stan, url, inevow
-from pubsubin.control import Router
-from zope.interface import implements
-
-from formless import annotate, webform
-
+from pubsubin.web.common import BaseController, requireLogin
 from pubsubin.models import User
 
-from twistler.controllers import BaseController
-
-
-def requireLogin(func):
-    def wrapper(klass, ctx):
-        session = inevow.ISession(ctx)
-        if getattr(session, 'user_id', None) is not None:
-            return func(klass, ctx)
-        session.msg = "You must log in."
-        session.path_attempt = inevow.IRequest(ctx).URLPath()
-        return Redirect(klass.kidpath(ctx, 'login'))
-    return wrapper
-        
+from twisted.python import log
 
 class HumanController(BaseController):
-    def index(self, ctx):
-        return self.view()
-
-
-    def login(self, ctx):
-        return webform.renderForms()
-        def dologin(users):
-            return self.view({'title': 'title', 'form': users(ctx, None)})
-        #return User.all().addCallback(dologin)
-        return webform.renderForms().render(ctx, None).addCallback(dologin)
-        #args = {'title': "You Must Log In", 'form': webform.renderForms().render(ctx, None)}
-        #return self.view(args)
-        #d = User.getByUserPass(args['username'], args['password'])
-        #return d.addCallback(self._login, args['ctx'])
-
-
-    def _login(self, user, ctx):
-        session = inevow.ISession(ctx)
-        if user is not None:
-            session.msg = "Welcome!"
-            session.user_id = user.id
-            if not getattr(session, 'path_attempt', None) is None:
-                return Redirect(session.path_attempt)
-            return url.here.click('welcome')
-        session.msg = "Incorrect password"
+    def logout(self, ctx):
+        self.session.user_id = None
+        self.params['message'] = "You have been logged out."
+        return self.view(action='index')
         
 
-    def bind_login(self, ctx):
-        args = {'username': annotate.String(required=True), 'password': annotate.PasswordEntry(required=True)}
-        return self.make_form(args, 'login', 'Login')
+    def dologin(self, ctx):
+        self.addParams('username', 'password')
+        if self.params['username'] == "" or self.params['password'] == "":
+            self.params['message'] = "You must specify a username and password"
+            return self.view(action='login')            
+        d = User.getByUserPass(self.params['username'], self.params['password'])
+        return d.addCallback(self._dologin)
 
 
-    def getDefaultViewArgs(self):
-        args = { 'message': "",
-                 'menu': self.makeMenu() }
-        return args
+    def _dologin(self, user):
+        if user is None:
+            self.params['message'] = "User not found with given username and password"
+            return self.view(action="login")
+
+        self.session.user_id = user.id
+        self.params['message'] = "You have signed in, %s" % user.username
+        if getattr(self.session, 'desiredpath', None) is not None:
+            return self.redirect(self.session.desiredpath)
+        return self.redirect(self.path('main'))
+        
+
+    def docreateaccount(self, ctx):
+        self.addParams('cusername', 'cpassword', 'cpasswordtwo')
+        if self.params['cusername'] == "" or self.params['cpassword'] == "":
+            self.params['message'] = "You must specify a username and password"
+            return self.view(action='login')
+        if self.params['cpassword'] != self.params['cpasswordtwo']:
+            self.params['message'] = "Both passwords must match."
+            return self.view(action='login')
+        user = User(username=self.params['cusername'], password=self.params['cpassword'])
+        return user.save().addCallback(self._dologin)
     
 
-    def makeMenu(self):
-        mname = "Main Nav"
-        menu = {mname: []}
-        if getattr(self.session, 'user_id', None) is None:
-            menu[mname].append(("Log In", self.path('login')))
-        #else:
-        #    menu[mname].append(("Nodes", self.sibpath(ctx, 'nodes')))
-        #    menu[mname].append(("Log Out", self.sibpath(ctx, 'logout')))
-        #menu[mname].append(('About', self.sibpath(ctx, 'about')))
-        return menu
-
-
-
-    ################################################
-
-    
-    def make_form(self, args, name, action):
-        args['ctx'] = annotate.Context()
-        arguments = [annotate.Argument(n, v, v.id) for n, v in args.items()]
-        method = annotate.Method(arguments=arguments)
-        return annotate.MethodBinding(name, method, action=action)        
-
-
-
-    def get_user(self, ctx):
-        session = inevow.ISession(ctx)        
-        return User.find(session.user_id)
+    @requireLogin
+    def main(self, ctx):
+        return self.view()
