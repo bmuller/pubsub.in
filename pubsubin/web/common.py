@@ -23,7 +23,7 @@ class BaseController(controllers.BaseController):
         if getattr(self.session, 'user_id', None) is None:
             menu[mname].append(("Log In", self.path('login', controller='human')))
         else:
-            menu[mname].append(("Nodes", self.path(controller='nodes')))
+            menu[mname].append(("Nodes", self.path('index', controller='node')))
             menu[mname].append(("Log Out", self.path('logout', controller='human')))
         menu[mname].append(('About', self.path('about', controller='human')))
         return menu

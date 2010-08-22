@@ -7,8 +7,9 @@ class NodeController(BaseController):
     @requireLogin
     def index(self, ctx):
         def show(nodes):
-            return 'hi' #self.view({'nodes': nodes})
+            return self.view({'nodes': nodes})
         def getNodes(user):
             return user.nodes.get(limit=10, orderby="id DESC").addCallback(show)
         return self.user.addCallback(getNodes)
+
 
