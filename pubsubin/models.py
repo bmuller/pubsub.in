@@ -19,6 +19,18 @@ class User(DBObject):
 class Node(DBObject):
     BELONGSTO = ['user']
 
+    def isValid(self):
+        if not self.shortname.isalnum():
+            return "Shortname can only contain numbers and letters, no spaces or symbols."
+        if self.name.strip() == "":
+            return "You must specify a name."
+        return True
+
+    def beforeCreate(self):
+        self.shortname = self.shortname.strip()
+        self.name = self.name.strip()
+        self.description = self.description.strip()        
+        
 
 class Address(DBObject):
     BELONGSTO = ['user']

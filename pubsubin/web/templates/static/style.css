@@ -156,3 +156,7 @@ div.freeform-form div.freeform-form-error {
 div.freeform-form div.freeform-error {
     color: #ff8800;
 }
+
+#message {
+    color: #ff0000;
+}

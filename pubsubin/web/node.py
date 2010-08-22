@@ -13,3 +13,14 @@ class NodeController(BaseController):
         return self.user.addCallback(getNodes)
 
 
+    @requireLogin
+    def docreate(self, ctx):
+        self.addParams('name', 'shortname', 'description')
+        self.params['user_id'] = self.session.user_id
+        node = Node(**self.params)
+        result = node.isValid()
+        if not result == True:
+            self.params['message'] = result
+            return self.view(action="create")
+        return "hello"
+        #return self.redirect(self.path("show"))
