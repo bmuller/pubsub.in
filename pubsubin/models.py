@@ -14,23 +14,28 @@ class User(DBObject):
 
     def beforeCreate(self):
         self.password = hashlib.sha1(self.password).hexdigest()
+        
+User.validatesLengthOf('username', 'password', range=xrange(1,255))
+
 
 
 class Node(DBObject):
     BELONGSTO = ['user']
 
-    def isValid(self):
-        if not self.shortname.isalnum():
-            return "Shortname can only contain numbers and letters, no spaces or symbols."
-        if self.name.strip() == "":
-            return "You must specify a name."
-        return True
-
     def beforeCreate(self):
         self.shortname = self.shortname.strip()
         self.name = self.name.strip()
-        self.description = self.description.strip()        
+        self.description = self.description.strip()
         
+Node.validatesLengthOf('name', 'shortname', range=xrange(1,255))
+msg = "must be unique in our system.  There is already a node with that shortname."
+Node.validatesUniquenessOf('shortname', message=msg)
+def shortnameCheck(node):
+    if not node.shortname.isalnum():
+        node.errors.add('shortname', "can only contain numbers and letters, no spaces or symbols.")
+Node.addValidator(shortnameCheck)
+
+
 
 class Address(DBObject):
     BELONGSTO = ['user']

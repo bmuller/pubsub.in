@@ -1,5 +1,5 @@
 from pubsubin.models import User, Node
-from pubsubin.web.common import BaseController, requireLogin
+from pubsubin.web.common import BaseController, requireLogin, checkOwner
 
 from twisted.python import log
 
@@ -15,12 +15,18 @@ class NodeController(BaseController):
 
     @requireLogin
     def docreate(self, ctx):
+        def _save(obj):
+            if not obj.errors.isEmpty():
+                self.message = str(obj.errors)
+                return self.view(action='create')
+            self.message = "Node '%s' created." % obj.name
+            return self.redirect(self.path(action='index'))
         self.addParams('name', 'shortname', 'description')
         self.params['user_id'] = self.session.user_id
-        node = Node(**self.params)
-        result = node.isValid()
-        if not result == True:
-            self.params['message'] = result
-            return self.view(action="create")
-        return "hello"
-        #return self.redirect(self.path("show"))
+        return Node(**self.params).save().addCallback(_save)
+
+
+    @requireLogin
+    @checkOwner(Node)
+    def show(self, ctx, node):
+        return "node: %s" % node.shortname

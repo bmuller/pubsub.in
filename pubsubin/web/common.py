@@ -7,10 +7,30 @@ def requireLogin(func):
         if getattr(klass.session, 'user_id', None) is not None:
             return func(klass, ctx)
         klass.session.desiredpath = klass.path()
-        klass.params['message'] = "You must log in."
+        klass.message = "You must log in."
         return klass.redirect(klass.path(controller='human', action='login'))
     return wrapper
+
+
+def checkOwner(ofklass):
+    def notfound(klass):
+        klass.message = "Invalid page.  Your link may be old."
+        return klass.redirect(klass.path())
+    def reallyCheckOwner(func):
+        def wrapper(klass, ctx):
+            def check(obj):
+                if obj is None:
+                    return notfound()
+                if obj.user_id != klass.session.user_id:
+                    return notfound()
+                return func(klass, ctx, obj)
+            if not klass.id.isdigit():
+                return notfound()
+            return ofklass.find(klass.id).addCallback(check)
+        return wrapper
+    return reallyCheckOwner
         
+
 
 class BaseController(controllers.BaseController):
     """
@@ -30,8 +50,7 @@ class BaseController(controllers.BaseController):
 
 
     def getDefaultViewArgs(self):
-        args = { 'message': "",
-                 'menu': self.makeMenu() }
+        args = { 'menu': self.makeMenu() }
         return args
 
 
