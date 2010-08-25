@@ -1,6 +1,7 @@
-from twistler import controllers
+from twistler.controllers import NotFound, BaseController
 from pubsubin.models import User
 from twisted.python import log
+
 
 def requireLogin(func):
     def wrapper(klass, ctx):
@@ -12,27 +13,24 @@ def requireLogin(func):
     return wrapper
 
 
+def _checkOwner(obj, func, klass, ctx):
+    if obj is None or obj.user_id != klass.session.user_id:
+        return None
+    return func(klass, ctx, obj)
+
+
 def checkOwner(ofklass):
-    def notfound(klass):
-        klass.message = "Invalid page.  Your link may be old."
-        return klass.redirect(klass.path())
-    def reallyCheckOwner(func):
+    def checkOwnerByType(func):
         def wrapper(klass, ctx):
-            def check(obj):
-                if obj is None:
-                    return notfound()
-                if obj.user_id != klass.session.user_id:
-                    return notfound()
-                return func(klass, ctx, obj)
-            if not klass.id.isdigit():
-                return notfound()
-            return ofklass.find(klass.id).addCallback(check)
+            if klass.id is None or not klass.id.isdigit():
+                return NotFound
+            return ofklass.find(klass.id).addCallback(_checkOwner, func, klass, ctx)
         return wrapper
-    return reallyCheckOwner
+    return checkOwnerByType
         
 
 
-class BaseController(controllers.BaseController):
+class BaseController(BaseController):
     """
     Make our own base controller to handle common stuff like the
     menu and default args.

@@ -13,7 +13,7 @@
 <table>
  <thead><td>Name</td></thead>
  % for node in nodes:
-  <tr><td><a href="${controller.path('show', id=node.id)}">${node.name}</a></td></tr>
+  <tr><td><%h:link href="${controller.path('show', id=node.id)}" value="${node.name}" /></td></tr>
  % endfor
 </table>
 </p>
