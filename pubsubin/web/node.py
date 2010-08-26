@@ -4,6 +4,11 @@ from pubsubin.web.common import BaseController, requireLogin, checkOwner
 from twisted.python import log
 
 class NodeController(BaseController):
+    def __init__(self, *args):
+        self.formparams = ['name', 'shortname', 'description', 'is_public']
+        BaseController.__init__(self, *args)
+
+    
     @requireLogin
     def index(self, ctx):
         def show(nodes):
@@ -27,7 +32,7 @@ class NodeController(BaseController):
     def create(self, ctx):
         if self.request.method != "POST":
             return self.view()
-        self.addParams('name', 'shortname', 'description')
+        self.addParams(*self.formparams)
         self.params['user_id'] = self.session.user_id
         self.params['id'] = None # to prevent haxoring in a node id
         return Node(**self.params).save().addCallback(self._save, 'create')
@@ -43,10 +48,10 @@ class NodeController(BaseController):
     @checkOwner(Node)
     def edit(self, ctx, node):
         if self.request.method != "POST":
-            for prop in ['name', 'shortname', 'description']:
+            for prop in self.formparams:
                 self.params[prop] = getattr(node, prop)
             return self.view()
-        self.addParams('name', 'shortname', 'description')
+        self.addParams(*self.formparams)
         self.params['user_id'] = self.session.user_id
         self.params['id'] = node.id # to prevent haxoring in a node id
         return Node(**self.params).save().addCallback(self._save, 'edit')            

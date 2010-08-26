@@ -9,6 +9,9 @@ node
  shortname
  name
  description
+ access_key
+ access_password
+ is_public (bool)
 
 addresses (for sms and email)
  id

@@ -13,6 +13,9 @@ CREATE TABLE nodes (
        name VARCHAR(255),
        user_id INT NOT NULL,
        description TEXT,
+       is_public BOOLEAN DEFAULT 0,
+       access_key VARCHAR(40),
+       access_password VARCHAR(40),
        PRIMARY KEY (id)
 ) ENGINE = INNODB;
 
