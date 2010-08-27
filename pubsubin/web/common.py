@@ -35,12 +35,13 @@ def _checkExists(obj, func, klass, ctx):
     return func(klass, ctx, obj)
 
 
-def checkExists(ofklass):
+def checkExists(ofklass, param='id'):
     def checkExistsByType(func):
         def wrapper(klass, ctx):
-            if klass.id is None or not klass.id.isdigit():
+            id = klass.ctx.arg(param, None)
+            if id is None or not id.isdigit():
                 return NotFound
-            return ofklass.find(klass.id).addCallback(_checkExists, func, klass, ctx)
+            return ofklass.find(id).addCallback(_checkExists, func, klass, ctx)
         return wrapper
     return checkExistsByType
 

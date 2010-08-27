@@ -2,7 +2,8 @@
 <%namespace module="twistler.htmlhelpers" name="h" />
 
 <h3>Node: ${node.name}</h3>
-<%h:link href="${controller.path(action='addmessage', id=node.id)}" value="Post Message" />
+<%h:link href="${controller.path(action='addmessage', id=node.id)}" value="Post Message" /><br />
+<%h:link href="${controller.path(controller='subscription', action='add', node_id=node.id)}" value="Subscribe To Node" />
 <p>Shortname: ${node.shortname | h}</p>
 <p>Description: ${node.description | h}</p>
 <p>Access Key: ${node.access_key}</p>

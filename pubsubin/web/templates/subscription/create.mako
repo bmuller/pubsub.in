@@ -3,7 +3,7 @@
 
 <h3>Add ${subscriber.shortname} Subscription To &quot;${node.name}&quot;</h3>
 <p>
-<%h:form>
+<%h:form action="${controller.path('doconfigure', id=node.id)}">
 %for name, desc in subscriber.fields.items():
 ${infl.humanize(name)}
 %if name in subscriber.requiredFields:

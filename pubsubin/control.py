@@ -1,6 +1,6 @@
 from twisted.python import log
 
-import os
+import os, cPickle
 
 import pubsubin
 from pubsubin.models import Subscriber
@@ -97,6 +97,19 @@ class BaseSubscriber:
         self.requiredFields = []
         self.name = shortname
         self.description = "No description."
+
+    def encodeConfig(self, config):
+        """
+        config is a dictionary 
+        """
+        for required in self.requiredFields:
+            if config.get(required, "") == "":
+                return False
+        return cPickle.dumps(config)
+
+
+    def decodeConfig(self, config):
+        return cPickle.loads(config)
 
                 
     def start(self):
