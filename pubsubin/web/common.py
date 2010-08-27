@@ -27,7 +27,22 @@ def checkOwner(ofklass):
             return ofklass.find(klass.id).addCallback(_checkOwner, func, klass, ctx)
         return wrapper
     return checkOwnerByType
-        
+
+
+def _checkExists(obj, func, klass, ctx):
+    if obj is None:
+        return None
+    return func(klass, ctx, obj)
+
+
+def checkExists(ofklass):
+    def checkExistsByType(func):
+        def wrapper(klass, ctx):
+            if klass.id is None or not klass.id.isdigit():
+                return NotFound
+            return ofklass.find(klass.id).addCallback(_checkExists, func, klass, ctx)
+        return wrapper
+    return checkExistsByType
 
 
 class BaseController(BaseController):
@@ -52,6 +67,13 @@ class BaseController(BaseController):
         return args
 
 
+    def userOwns(self, something):
+        if getattr(self.session, 'user_id', None) is None:
+            return False
+        return something.user_id == self.session.user_id
+    
+
     @property
     def user(self):
         return User.find(self.session.user_id)
+

@@ -1,12 +1,8 @@
-from twisted.application import internet
 from twisted.application import service
-
-from nevow import appserver
-
 from twisted.enterprise import adbapi
+
 from twistar.registry import Registry
 
-from pubsubin.web import routes
 from pubsubin.control import Router
 
 from config import CONFIG
@@ -23,7 +19,6 @@ Registry.DBPOOL = adbapi.ConnectionPool(Router.getConfig('dbdriver'),
 
 # Start application
 application = service.Application('pubsubin')
-site = appserver.NevowSite(routes.WebRoot())
-webServer = internet.TCPServer(Router.getConfig('webport'), site)
-webServer.setServiceParent(application)
 
+# create the router
+router = Router(application)

@@ -22,6 +22,7 @@ User.validatesLengthOf('username', 'password', range=xrange(1,255))
 
 class Node(DBObject):
     BELONGSTO = ['user']
+    HASMANY = ['messages']
 
     def beforeSave(self):
         self.shortname = self.shortname.strip()
@@ -50,6 +51,12 @@ class Address(DBObject):
 class Subscriber(DBObject):
     BELONGSTO = ['user', 'node']
 
+    def getByMessage(self, msg):
+        """
+        Get every subscriber that should get this message.
+        """
+        return Subscriber.find(where=['node_id = ?', msg.node_id])
+        
 
 class Publisher(DBObject):
     BELONGSTO = ['user', 'node']
@@ -57,5 +64,7 @@ class Publisher(DBObject):
 
 class Message(DBObject):
     BELONGSTO = ['node']
+
+Message.validatesPresenceOf('body')
 
 Registry.register(User, Node, Address, Subscriber, Publisher, Message)

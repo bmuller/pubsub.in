@@ -1,5 +1,5 @@
-from pubsubin.models import User, Node
-from pubsubin.web.common import BaseController, requireLogin, checkOwner
+from pubsubin.models import User, Node, Message
+from pubsubin.web.common import BaseController, requireLogin, checkOwner, checkExists
 
 from twisted.python import log
 
@@ -41,7 +41,10 @@ class NodeController(BaseController):
     @requireLogin
     @checkOwner(Node)
     def show(self, ctx, node):
-        return self.view({'node': node})
+        def _show(msgs):
+            return self.view({'node': node, 'msgs': msgs})
+        return node.messages.get().addCallback(_show)
+        
 
 
     @requireLogin
@@ -56,4 +59,34 @@ class NodeController(BaseController):
         self.params['id'] = node.id # to prevent haxoring in a node id
         return Node(**self.params).save().addCallback(self._save, 'edit')            
 
-    
+
+    def _saveMsg(self, msg, node):
+        def showResult():
+            self.message = "Message entitled '%s' published." % msg.title
+            return self.redirect(self.path(action='show', id=node.id))
+        
+        if not msg.errors.isEmpty():
+            self.message = str(msg.errors)
+            return self.view({'node': node}, action='addmessage')
+        return self.appcontroller.router.publish(msg).addCallback(showResult)
+
+
+    @requireLogin
+    @checkOwner(Node)
+    def addmessage(self, ctx, node):
+        self.addParams('title', 'body')
+        if self.request.method != "POST":
+            return self.view({'node': node})
+        self.params['id'] = None
+        self.params['node_id'] = self.id
+        return Message(**self.params).save().addCallback(self._saveMsg, node)
+
+
+    @checkExists(Message)
+    def viewmsg(self, ctx, message):
+        def checkPerms(node):
+            if not self.userOwns(node) and not node.is_public:
+                self.message = "You don't have permission to view that node.  You may just need to log in first."
+                return self.redirect(self.path(controller='human', action='index', id=None))
+            return self.view({'msg': message})
+        return message.node.get().addCallback(checkPerms)

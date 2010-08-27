@@ -55,5 +55,15 @@ CREATE TABLE messages (
        node_id INT NOT NULL,
        title VARCHAR(255),
        body TEXT NOT NULL, 
+       created TIMESTAMP DEFAULT NOW(),
+       PRIMARY KEY (id)
+) ENGINE = INNODB;
+
+DROP TABLE IF EXISTS delivery_failures;
+CREATE TABLE delivery_failures (
+       id INT NOT NULL AUTO_INCREMENT,
+       message_id INT NOT NULL,
+       subscriber_id INT NOT NULL,
+       send_attempts INT DEFAULT 0,
        PRIMARY KEY (id)
 ) ENGINE = INNODB;

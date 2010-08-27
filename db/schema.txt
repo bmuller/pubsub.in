@@ -37,3 +37,9 @@ messages
  node_id
  title
  body
+ created
+
+delivery_failures
+ message_id
+ subscriber_id
+ send_attempts
