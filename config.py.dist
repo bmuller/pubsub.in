@@ -7,7 +7,7 @@ CONFIG = {
     'dbdriver': 'MySQLdb',
     'dbhost': 'localhost',
     'webport': 8080,
-    ' templateDir': '',   # this is set automatically to the pubsubin templates dir
+    'templateDir': '/some/path',   # this is set automatically - don't set unless you know what you're doing
     'templateCacheDir': None,
     'enabledPublishers': ['web', 'webssl'],
     'enabledSubscribers': ['email'],

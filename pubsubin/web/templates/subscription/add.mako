@@ -6,7 +6,7 @@
 Enabled suscribers:
 <ul>
 %for subscriber in subscribers:
-  <%h:link href="${controller.path(action='configure', id=node.id, subscriber_name=subscriber.shortname)}" value="${subscriber.name}" /><br />
+  <%h:link href="${controller.path(action='create', node_id=node.id, subscriber_name=subscriber.shortname)}" value="${subscriber.name}" /><br />
   ${subscriber.description}
 %endfor
 </li>

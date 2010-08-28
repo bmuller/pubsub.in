@@ -102,10 +102,13 @@ class BaseSubscriber:
         """
         config is a dictionary 
         """
-        for required in self.requiredFields:
-            if config.get(required, "") == "":
+        c = {}
+        for field in self.fields.keys():
+            if field in self.requiredFields and config.get(field, "") == "":
                 return False
-        return cPickle.dumps(config)
+            c[field] = config[field]
+        log.msg("pickling %s" % str(c))
+        return cPickle.dumps(c)
 
 
     def decodeConfig(self, config):

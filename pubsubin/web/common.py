@@ -7,7 +7,7 @@ def requireLogin(func):
     def wrapper(klass, ctx):
         if getattr(klass.session, 'user_id', None) is not None:
             return func(klass, ctx)
-        klass.session.desiredpath = klass.path()
+        klass.session.desiredpath = klass.path(clear_query=False)
         klass.message = "You must log in."
         return klass.redirect(klass.path(controller='human', action='login'))
     return wrapper
