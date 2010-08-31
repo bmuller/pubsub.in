@@ -1,12 +1,12 @@
 from pubsubin.web import routes
-from pubsubin.control import Router, BaseSubscriber
+from pubsubin.control import Router, SubscriptionType
 
 from pubsubin.utils import sendEmail
 
-class EMailSubscriber(BaseSubscriber):
+class EMailSubscriptionType(SubscriptionType):
     
     def __init__(self, router, application):
-        BaseSubscriber.__init__(self, 'email', router, application)
+        SubscriptionType.__init__(self, 'email', router, application)
         self.fields = {'to_address': "Address to send emails to."}
         self.requiredFields = ['to_address']
         self.name = "Email"
@@ -17,7 +17,7 @@ class EMailSubscriber(BaseSubscriber):
         pass
 
 
-Router.addSubscriber(EMailSubscriber)
+Router.addSubscriber(EMailSubscriptionType)
 
 
 

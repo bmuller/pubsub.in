@@ -1,1 +1,1 @@
-from email import EMailSubscriber
+from email import EMailSubscriptionType

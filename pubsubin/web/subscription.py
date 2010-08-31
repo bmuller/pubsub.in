@@ -1,4 +1,4 @@
-from pubsubin.models import User, Node, Message, Subscriber
+from pubsubin.models import User, Node, Message, Subscription
 from pubsubin.web.common import BaseController, requireLogin, checkOwner, checkExists
 from BermiInflector.Inflector import Inflector
 from twisted.python import log
@@ -9,45 +9,60 @@ class SubscriptionController(BaseController):
     @requireLogin
     @checkExists(Node, 'node_id')
     def add(self, ctx, node):
-        subscribers = self.appcontroller.router.subscribers.values()
-        return self.view({'subscribers': subscribers, 'node': node})
+        subtypes = self.appcontroller.router.subscribers.values()
+        return self.view({'subtypes': subtypes, 'node': node})
 
 
     def _preconfig(self):
-        subscribers = self.appcontroller.router.subscribers
-        self.addParams('subscriber_name')
-        if self.params['subscriber_name'] == "" or not subscribers.has_key(self.params['subscriber_name']):
+        subtypes = self.appcontroller.router.subscribers
+        self.addParams('type')
+        if self.params['type'] == "" or not subtypes.has_key(self.params['type']):
             self.message = "No such subscriber."
             return False
-        subscriber = subscribers[self.params['subscriber_name']]
-        self.addParams(*subscriber.fields.keys())        
-        return subscriber
+        subtype = subtypes[self.params['type']]
+        self.addParams(*subtype.fields.keys())        
+        return subtype
+
+
+    def _save(self, subscription, erroraction, viewargs):
+        if not subscription.errors.isEmpty():
+            self.message = str(subscription.errors)
+            return self.view(viewargs, action=erroraction)
+        self.message = "Subscription added."
+        return self.redirect(self.path(action='show', id=subscription.id))
 
 
     @requireLogin
     @checkExists(Node, 'node_id')
     def create(self, ctx, node):
-        subscriber = self._preconfig()
-        if not subscriber:
-            return self.redirect(self.path(action='add', node_id=node.id))        
-        return self.view({'subscriber': subscriber, 'node': node, 'infl': Inflector(), 'params': self.params})
-
-
-    @requireLogin
-    @checkExists(Node, 'node_id')
-    def docreate(self, ctx, node):
-        def _save(subscriber):
-            self.message = "Subscription added."
-            return self.redirect(self.path(controller='node', action='show', id=node.id))
-        subscriber = self._preconfig()
-        if not subscriber:
+        subtype = self._preconfig()
+        if not subtype:
             return self.redirect(self.path(action='add', node_id=node.id))
-        config = subscriber.encodeConfig(self.params)
-        if config is False:
-            self.message = "You must fill out all required fields."
-            args = {'subscriber': subscriber, 'node': node, 'infl': Inflector(), 'params': self.params}
-            return self.view(args, action='create')
-        s = Subscriber(user_id=self.session.user_id, node_id=node.id, service_name=subscriber.shortname, config=config)
-        return s.save().addCallback(_save)
+
+        viewargs = {'subtype': subtype, 'node': node, 'infl': Inflector(), 'params': self.params}
+        if self.request.method != "POST":
+            return self.view(viewargs)
+
+        s = Subscription(user_id=self.session.user_id, node_id=node.id, type_name=subtype.shortname)
+        s.setConfig(self.params, subtype)
+        return s.save().addCallback(self._save, 'create', viewargs)
     
             
+    @requireLogin
+    @checkExists(Subscription)
+    def edit(self, ctx, sub):
+        subtypes = self.appcontroller.router.subscribers
+        subtype = subtypes[sub.type_name]
+
+        for key, value in sub.config.items():
+            self.params[key] = value
+            
+        viewargs = {'subtype': subtype, 'node': node, 'infl': Inflector(), 'params': self.params}
+        if self.request.method != "POST":
+            return self.view(viewargs)
+
+        s = Subscription(**self.params)
+        attrs = {'user_id': self.session.user_id, 'node_id': sub.node_id, 'id': sub.id, 'type_name': subtype.shortname}
+        s.updateAttrs(attrs)
+        s.setConfig(self.params, subtype)
+        return s.save().addCallback(self._save, 'edit', viewargs)

@@ -1,9 +1,9 @@
 from twisted.python import log
 
-import os, cPickle
+import os
 
 import pubsubin
-from pubsubin.models import Subscriber
+from pubsubin.models import Subscription
 
 class Router:
     CONFIG = {
@@ -77,7 +77,7 @@ class Router:
 
 
 
-class BasePublisher:
+class PublisherType:
     def __init__(self, shortname, router, application):
         self.shortname = shortname
         self.router = router
@@ -88,7 +88,7 @@ class BasePublisher:
         pass
 
 
-class BaseSubscriber:
+class SubscriptionType:
     def __init__(self, shortname, router, application):
         self.shortname = shortname
         self.router = router
@@ -98,22 +98,6 @@ class BaseSubscriber:
         self.name = shortname
         self.description = "No description."
 
-    def encodeConfig(self, config):
-        """
-        config is a dictionary 
-        """
-        c = {}
-        for field in self.fields.keys():
-            if field in self.requiredFields and config.get(field, "") == "":
-                return False
-            c[field] = config[field]
-        log.msg("pickling %s" % str(c))
-        return cPickle.dumps(c)
 
-
-    def decodeConfig(self, config):
-        return cPickle.loads(config)
-
-                
     def start(self):
         pass

@@ -20,16 +20,16 @@ addresses (for sms and email)
  verified (bool)
  mobile (bool)
 
-subscribers
+subscriptions
  user_id
  node_id
- service_name
+ type_name
  config 
 
 publishers
  user_id
  node_id
- service_name
+ type_name
  config
 
 messages

@@ -1,7 +1,6 @@
 from twistar.dbobject import DBObject
 from twistar.registry import Registry
-import hashlib
-import uuid
+import hashlib, uuid, cPickle
 
 
 class User(DBObject):
@@ -48,14 +47,35 @@ class Address(DBObject):
     BELONGSTO = ['user']
 
 
-class Subscriber(DBObject):
+class Subscription(DBObject):
     BELONGSTO = ['user', 'node']
 
     def getByMessage(self, msg):
         """
         Get every subscriber that should get this message.
         """
-        return Subscriber.find(where=['node_id = ?', msg.node_id])
+        return Subscription.find(where=['node_id = ?', msg.node_id])
+
+
+    def afterInit(self):
+        """
+        depickle our config
+        """
+        if hasattr(self, 'config'):
+            self.config = cPickle.loads(self.config)
+
+
+    def beforeSave(self):
+        self.config = cPickle.dumps(self.config)
+
+
+    def setConfig(self, config, subtype):
+        self.config = {}
+        for field in subtype.fields.keys():
+            if field in subtype.requiredFields and config.get(field, "") == "":
+                self.errors.add(field, "cannot be blank")
+            self.config[field] = config.get(field, "")
+                
         
 
 class Publisher(DBObject):
@@ -67,4 +87,4 @@ class Message(DBObject):
 
 Message.validatesPresenceOf('body')
 
-Registry.register(User, Node, Address, Subscriber, Publisher, Message)
+Registry.register(User, Node, Address, Subscription, Publisher, Message)

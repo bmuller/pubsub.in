@@ -29,12 +29,12 @@ CREATE TABLE addresses (
        PRIMARY KEY (id)
 ) ENGINE = INNODB;
 
-DROP TABLE IF EXISTS subscribers;
-CREATE TABLE subscribers (
+DROP TABLE IF EXISTS subscriptions;
+CREATE TABLE subscriptions (
        id INT NOT NULL AUTO_INCREMENT,
        user_id INT NOT NULL,
        node_id INT NOT NULL,
-       service_name VARCHAR(255) NOT NULL, 
+       type_name VARCHAR(255) NOT NULL, 
        config TEXT,
        PRIMARY KEY (id)
 ) ENGINE = INNODB;
@@ -44,7 +44,7 @@ CREATE TABLE publishers (
        id INT NOT NULL AUTO_INCREMENT,
        user_id INT NOT NULL,
        node_id INT NOT NULL,
-       service_name VARCHAR(255) NOT NULL, 
+       type_name VARCHAR(255) NOT NULL, 
        config TEXT,
        PRIMARY KEY (id)
 ) ENGINE = INNODB;

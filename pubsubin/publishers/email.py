@@ -7,7 +7,7 @@ from twisted.python import log
 
 import email
 
-from pubsubin.control import Router, BasePublisher
+from pubsubin.control import Router, PublisherType
 
 
 class MessageDelivery:
@@ -74,9 +74,9 @@ class SMTPFactory(smtp.SMTPFactory):
         return p
 
 
-class EMailPublisher(BasePublisher):
+class EMailPublisher(PublisherType):
     def __init__(self, router, application):
-        BasePublisher.__init__(self, 'email', router, application)
+        PublisherType.__init__(self, 'email', router, application)
 
     def start(self):
         smtpserver = internet.TCPServer(Router.getConfig('smtpport'), SMTPFactory(self.router))

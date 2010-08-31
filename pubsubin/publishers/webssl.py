@@ -10,14 +10,14 @@ if ssl and not ssl.supported:
     ssl = None                    
 
 from pubsubin.web import routes
-from pubsubin.control import Router, BasePublisher
+from pubsubin.control import Router, PublisherType
 
 from nevow import appserver
 
 
-class WebSSLPublisher(BasePublisher):
+class WebSSLPublisher(PublisherType):
     def __init__(self, router, application):
-        BasePublisher.__init__(self, 'webssl', router, application)
+        PublisherType.__init__(self, 'webssl', router, application)
 
     def start(self):
         site = appserver.NevowSite(routes.WebRoot(self.router))

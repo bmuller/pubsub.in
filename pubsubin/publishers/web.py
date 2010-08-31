@@ -1,13 +1,13 @@
 from twisted.application import internet
 
 from pubsubin.web import routes
-from pubsubin.control import Router, BasePublisher
+from pubsubin.control import Router, PublisherType
 
 from nevow import appserver
 
-class WebPublisher(BasePublisher):
+class WebPublisher(PublisherType):
     def __init__(self, router, application):
-        BasePublisher.__init__(self, 'web', router, application)
+        PublisherType.__init__(self, 'web', router, application)
 
     def start(self):
         site = appserver.NevowSite(routes.WebRoot(self.router))
