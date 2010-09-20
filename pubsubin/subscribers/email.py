@@ -16,6 +16,8 @@ class EMailSubscriptionType(SubscriptionType):
     def send(self, msg, config):
         pass
 
+    def __str__(self):
+        return "send emails to %s" % self.config['to_address']
 
 Router.addSubscriber(EMailSubscriptionType)
 

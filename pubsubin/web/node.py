@@ -41,10 +41,14 @@ class NodeController(BaseController):
     @requireLogin
     @checkOwner(Node)
     def show(self, ctx, node):
-        def _show(msgs):
-            return self.view({'node': node, 'msgs': msgs})
-        return node.messages.get().addCallback(_show)
-        
+        def _show(subs, msgs):
+            subs = filter(lambda sub: self.router.subtypeIsEnabled(sub.type_name), subs)
+            return self.view({'node': node, 'subs': subs, 'msgs': msgs, 'router': self.router})
+        def _getSubs(messages):
+            where=["user_id = ?", self.session.user_id]
+            return node.subscriptions.get(where=where).addCallback(_show, messages)
+        return node.messages.get().addCallback(_getSubs)
+
 
 
     @requireLogin

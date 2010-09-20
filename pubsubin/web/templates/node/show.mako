@@ -22,6 +22,7 @@ Public cannot post to node.
 </p>
 
 <h4>Messages</h4>
+<p>
 %if len(msgs) == 0:
 No messages yet.  <%h:link href="${controller.path(action='addmessage', id=node.id)}" value="Post one." />
 %else:
@@ -31,5 +32,19 @@ No messages yet.  <%h:link href="${controller.path(action='addmessage', id=node.
 <td><%h:link href="${controller.path(action='viewmsg', id=msg.id)}" value="${msg.title}" /></td><td>${msg.created}</td>
 %endfor
 </table>
-
 %endif
+</p>
+
+<h4>Subscriptions</h4>
+<p>
+%if len(subs) == 0:
+No subscriptions yet.  <%h:link href="${controller.path(controller='subscription', action='add', node_id=node.id)}" value="Subscribe To Node" />
+%else:
+
+<table><thead><td>Subscription Type</td><td>Description</td></thead>
+%for sub in subs:
+<td>${router.getSubtype(sub.type_name).name}</td><td>here: ${str(sub)}</td>
+%endfor
+</table>
+%endif
+</p>

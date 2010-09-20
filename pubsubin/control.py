@@ -44,6 +44,14 @@ class Router:
                 self.subscribers[s.shortname] = s
 
 
+    def subtypeIsEnabled(self, subtypeName):
+        return self.subscribers.has_key(subtypeName)
+
+
+    def getSubtype(self, subtypeName):
+        return self.subscribers[subtypeName]
+
+
     def publish(self, msg):
         def send(subscribers):
             ds = []
@@ -101,3 +109,7 @@ class SubscriptionType:
 
     def start(self):
         pass
+
+
+    def __str__(self):
+        return "A %s subscription" % self.name

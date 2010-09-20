@@ -1,5 +1,7 @@
 from twistar.dbobject import DBObject
 from twistar.registry import Registry
+from twisted.python import log
+
 import hashlib, uuid, cPickle
 
 
@@ -21,7 +23,7 @@ User.validatesLengthOf('username', 'password', range=xrange(1,255))
 
 class Node(DBObject):
     BELONGSTO = ['user']
-    HASMANY = ['messages']
+    HASMANY = ['messages', 'subscriptions']
 
     def beforeSave(self):
         self.shortname = self.shortname.strip()
@@ -66,7 +68,9 @@ class Subscription(DBObject):
 
 
     def beforeSave(self):
+        log.msg("About to save sub.  config before is: '%s'" % str(self.config))        
         self.config = cPickle.dumps(self.config)
+        log.msg("About to save sub.  config after is: '%s'" % str(self.config))
 
 
     def setConfig(self, config, subtype):

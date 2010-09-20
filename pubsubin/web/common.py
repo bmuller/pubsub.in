@@ -78,3 +78,7 @@ class BaseController(BaseController):
     def user(self):
         return User.find(self.session.user_id)
 
+
+    @property
+    def router(self):
+        return self.appcontroller.router
