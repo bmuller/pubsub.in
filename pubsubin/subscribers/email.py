@@ -3,8 +3,8 @@ from pubsubin.control import Router, SubscriptionType
 
 from pubsubin.utils import sendEmail
 
+
 class EMailSubscriptionType(SubscriptionType):
-    
     def __init__(self, router, application):
         SubscriptionType.__init__(self, 'email', router, application)
         self.fields = {'to_address': "Address to send emails to."}
@@ -16,8 +16,9 @@ class EMailSubscriptionType(SubscriptionType):
     def send(self, msg, config):
         pass
 
-    def __str__(self):
-        return "send emails to %s" % self.config['to_address']
+
+    def toString(self, emailsub):
+        return "send emails to %s" % emailsub.config['to_address']        
 
 Router.addSubscriber(EMailSubscriptionType)
 

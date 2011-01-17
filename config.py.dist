@@ -15,5 +15,6 @@ CONFIG = {
     'sslcrt': '',
     'webportssl': 443,
     'domain': 'localhost',
-    'smtpport': 25
+    'smtpport': 25,
+    'dbdebug': False
     }

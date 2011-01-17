@@ -13,35 +13,41 @@ def requireLogin(func):
     return wrapper
 
 
-def _checkOwner(obj, func, klass, ctx):
+def _checkOwner(obj, func, klass, ctx, loadRelations):
     if obj is None or obj.user_id != klass.session.user_id:
         return None
+    if loadRelations:
+        return obj.loadRelations().addCallback(lambda relations: func(klass, ctx, obj, relations))    
     return func(klass, ctx, obj)
 
 
-def checkOwner(ofklass):
+def checkOwner(ofklass, loadRelations=False):
     def checkOwnerByType(func):
         def wrapper(klass, ctx):
             if klass.id is None or not klass.id.isdigit():
                 return NotFound
-            return ofklass.find(klass.id).addCallback(_checkOwner, func, klass, ctx)
+            return ofklass.find(klass.id).addCallback(_checkOwner, func, klass, ctx, loadRelations)
         return wrapper
     return checkOwnerByType
 
 
-def _checkExists(obj, func, klass, ctx):
+def _checkExists(obj, func, klass, ctx, loadRelations):
     if obj is None:
         return None
+    if loadRelations:
+        return obj.loadRelations().addCallback(lambda relations: func(klass, ctx, obj, relations))
     return func(klass, ctx, obj)
 
 
-def checkExists(ofklass, param='id'):
+def checkExists(ofklass, param='id', loadRelations=False):
     def checkExistsByType(func):
         def wrapper(klass, ctx):
-            id = klass.ctx.arg(param, None)
+            klass.addParams(param)
+            id = klass.params[param]
             if id is None or not id.isdigit():
+                log.msg("ID %s not found" % str(id))
                 return NotFound
-            return ofklass.find(id).addCallback(_checkExists, func, klass, ctx)
+            return ofklass.find(id).addCallback(_checkExists, func, klass, ctx, loadRelations)
         return wrapper
     return checkExistsByType
 

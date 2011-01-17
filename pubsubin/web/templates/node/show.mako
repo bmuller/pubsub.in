@@ -41,9 +41,13 @@ No messages yet.  <%h:link href="${controller.path(action='addmessage', id=node.
 No subscriptions yet.  <%h:link href="${controller.path(controller='subscription', action='add', node_id=node.id)}" value="Subscribe To Node" />
 %else:
 
-<table><thead><td>Subscription Type</td><td>Description</td></thead>
+<table><thead><td>Subscription Type</td><td>Description</td><td></td><td></td></thead>
 %for sub in subs:
-<td>${router.getSubtype(sub.type_name).name}</td><td>here: ${str(sub)}</td>
+<tr>
+<td>${router.getSubtype(sub.type_name).name}</td><td>${router.getSubtype(sub.type_name).toString(sub)}</td>
+<td><%h:link href="${controller.path(action='edit', id=sub.id, controller='subscription')}" value="edit" /></td>
+<td><%h:link href="${controller.path(action='delete', id=sub.id, controller='subscription')}" value="delete" /></td>
+</tr>
 %endfor
 </table>
 %endif

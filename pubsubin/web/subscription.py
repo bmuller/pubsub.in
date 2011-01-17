@@ -29,7 +29,7 @@ class SubscriptionController(BaseController):
             self.message = str(subscription.errors)
             return self.view(viewargs, action=erroraction)
         self.message = "Subscription added."
-        return self.redirect(self.path(action='show', id=subscription.id))
+        return self.redirect(self.path(action='show', id=subscription.node_id, controller="node"))
 
 
     @requireLogin
@@ -49,20 +49,31 @@ class SubscriptionController(BaseController):
     
             
     @requireLogin
-    @checkExists(Subscription)
-    def edit(self, ctx, sub):
-        subtypes = self.appcontroller.router.subscribers
-        subtype = subtypes[sub.type_name]
-
-        for key, value in sub.config.items():
-            self.params[key] = value
+    @checkOwner(Subscription, loadRelations=True)
+    def edit(self, ctx, sub, relations):
+        subtype = self.appcontroller.router.subscribers[sub.type_name]
+        node = relations['node']
             
         viewargs = {'subtype': subtype, 'node': node, 'infl': Inflector(), 'params': self.params}
         if self.request.method != "POST":
+            for key, value in sub.config.items():
+                self.params[key] = value
             return self.view(viewargs)
 
+        self.addParams(*sub.config.keys())
         s = Subscription(**self.params)
         attrs = {'user_id': self.session.user_id, 'node_id': sub.node_id, 'id': sub.id, 'type_name': subtype.shortname}
         s.updateAttrs(attrs)
         s.setConfig(self.params, subtype)
         return s.save().addCallback(self._save, 'edit', viewargs)
+
+
+    def _delete(self, _):
+        self.message = "Subscription deleted."
+        self.redirect(self.path(action='show', id=sub.node_id, controller="node"))
+
+    @requireLogin
+    @checkOwner(Subscription)
+    def delete(self, ctx, sub):
+        #bmuller here
+        sub.delete().addCallback(self._delete)

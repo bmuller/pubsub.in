@@ -79,8 +79,7 @@ class Subscription(DBObject):
             if field in subtype.requiredFields and config.get(field, "") == "":
                 self.errors.add(field, "cannot be blank")
             self.config[field] = config.get(field, "")
-                
-        
+
 
 class Publisher(DBObject):
     BELONGSTO = ['user', 'node']

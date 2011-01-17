@@ -18,7 +18,8 @@ class Router:
         'enabledPublishers': ['web', 'webssl'],
         'enabledSubscribers': ['email'],
         'domain': 'localhost',
-        'smtpport': 25
+        'smtpport': 25,
+        'dbdebug': False
         }
 
     PUBLISHERS = []
@@ -111,5 +112,5 @@ class SubscriptionType:
         pass
 
 
-    def __str__(self):
-        return "A %s subscription" % self.name
+    def toString(self, sub):
+        return "A %s subscription" % sub.name
