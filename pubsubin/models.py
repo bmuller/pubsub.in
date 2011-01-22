@@ -52,6 +52,7 @@ class Address(DBObject):
 class Subscription(DBObject):
     BELONGSTO = ['user', 'node']
 
+    @classmethod
     def getByMessage(self, msg):
         """
         Get every subscriber that should get this message.
@@ -68,9 +69,7 @@ class Subscription(DBObject):
 
 
     def beforeSave(self):
-        log.msg("About to save sub.  config before is: '%s'" % str(self.config))        
         self.config = cPickle.dumps(self.config)
-        log.msg("About to save sub.  config after is: '%s'" % str(self.config))
 
 
     def setConfig(self, config, subtype):

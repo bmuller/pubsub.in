@@ -65,7 +65,7 @@ class NodeController(BaseController):
 
 
     def _saveMsg(self, msg, node):
-        def showResult():
+        def showResult(_):
             self.message = "Message entitled '%s' published." % msg.title
             return self.redirect(self.path(action='show', id=node.id))
         

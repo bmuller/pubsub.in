@@ -1,4 +1,5 @@
 from twisted.python import log
+from twisted.internet.defer import DeferredList
 
 import os
 
@@ -57,10 +58,10 @@ class Router:
         def send(subscribers):
             ds = []
             for subscriber in subscribers:
-                d = self.subscribers[subscriber.shortname].send(msg, subscriber.config)
+                d = self.subscribers[subscriber.type_name].send(msg, subscriber)
                 ds.append(d)
             return DeferredList(ds)
-        return Subscriber.getByMsg(msg).addCallback(send)
+        return Subscription.getByMessage(msg).addCallback(send)
         
 
     @classmethod

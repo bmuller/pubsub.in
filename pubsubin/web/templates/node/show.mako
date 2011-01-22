@@ -29,7 +29,9 @@ No messages yet.  <%h:link href="${controller.path(action='addmessage', id=node.
 
 <table><thead><td>Title</td><td>Sent</td></thead>
 %for msg in msgs:
+<tr>
 <td><%h:link href="${controller.path(action='viewmsg', id=msg.id)}" value="${msg.title}" /></td><td>${msg.created}</td>
+</tr>
 %endfor
 </table>
 %endif

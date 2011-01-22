@@ -68,12 +68,11 @@ class SubscriptionController(BaseController):
         return s.save().addCallback(self._save, 'edit', viewargs)
 
 
-    def _delete(self, _):
+    def _delete(self, _, node_id):
         self.message = "Subscription deleted."
-        self.redirect(self.path(action='show', id=sub.node_id, controller="node"))
+        return self.redirect(self.path(action='show', id=node_id, controller="node"))
 
     @requireLogin
     @checkOwner(Subscription)
     def delete(self, ctx, sub):
-        #bmuller here
-        sub.delete().addCallback(self._delete)
+        return sub.delete().addCallback(self._delete, sub.node_id)

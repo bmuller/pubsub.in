@@ -25,7 +25,7 @@ class MessageDelivery:
     
     def validateTo(self, user):
         if not user.dest.domain.lower().endswith(Router.getConfig('domain')):
-            log.err("attempt to send message to an unknown user: \"%s\"" % str(user.dest))
+            log.err("attempt to send message to an unknown destination: \"%s\"" % str(user.dest))
             raise smtp.SMTPBadRcpt(user)
         return lambda: Message(self.router)
         
@@ -43,6 +43,8 @@ class Message:
 
     
     def eomReceived(self):
+        log.msg("Got message: %s" % "\n".join(self.lines))
+        """
         def doSend(fr):                   
             body = msg.get_payload()
             to = msg['to'][:-len(CONFIG['domain'])-1]       
@@ -56,6 +58,7 @@ class Message:
         self.lines = None
         Node
         return emailToUsername(self.dbpool, msg['from'].lower()).addCallback(doSend)
+        """
 
     
     def connectionLost(self):
